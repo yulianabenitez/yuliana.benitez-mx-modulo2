@@ -1,3 +1,6 @@
 {
-    "docwriter.language": "Spanish"
+    "docwriter.language": "Spanish",
+    "cSpell.words": [
+        "pygame"
+    ]
 }
