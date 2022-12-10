@@ -1,8 +1,9 @@
 
 import pygame
 import random
-from dino_runner.utils.constants import SMALL_CACTUS
-from dino_runner.components.obstacles.cactus import Cactus
+from dino_runner.utils.constants import SCREEN_WIDTH, SHIELD_TYPE, SMALL_CACTUS, LARGE_CACTUS, BIRD
+from dino_runner.components.obstacles.cactus_small import SmallCactus
+from dino_runner.components.obstacles.cactus_large import LargeCactus
 from dino_runner.components.obstacles.bird import Bird
 
 
@@ -11,22 +12,25 @@ class ObstacleManager:
         self.obstacles = []
 
     def update(self, game):
-        turn = random.randint(0, 2)
+        # Elige aleatoriamente entre SMALL, LARGE de lo contrario añadimos BIRD
         if len(self.obstacles) == 0:
-            if turn == 0:
-                self.obstacles.append(Cactus('LARGE'))
-            elif turn == 1:
-                self.obstacles.append(Cactus('SMALL'))
-            else:
-                self.obstacles.append(Bird('BIRD'))
+            if random.randint(0, 2) == 0:
+                self.obstacles.append(SmallCactus(SMALL_CACTUS))
+            elif random.randint(0, 2) == 1:
+                self.obstacles.append(LargeCactus(LARGE_CACTUS))
+            elif random.randint(0, 2) == 2:
+                self.obstacles.append(Bird(BIRD))
 
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
             if game.player.dino_rect.colliderect(obstacle.rect):
-                pygame.time.delay(1000)
-                game.playing = False
-                game.death_count += 1
-                break
+                if game.player.type != SHIELD_TYPE:
+                    pygame.time.delay(1000)
+                    game.playing = False
+                    game.death_count += 1
+                    break
+                else:
+                    self.obstacles.remove(obstacle)
 
     def draw(self, screen):
         for obstacle in self.obstacles:
